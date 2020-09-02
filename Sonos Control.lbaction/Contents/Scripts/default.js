@@ -228,7 +228,13 @@ function showFavourites(sonosid)
     LaunchBar.debugLog("Finding Sonos Favourites for "+sonosid);
 
     var result = HTTP.getJSON(serverRoot+encodeURIComponent(sonosid)+'/favorites');
+    var listItems = [];
     if (result.data != undefined) {
+      if (result.data.status && result.data.status == "error")
+      {
+        listItems.push({title:'Error retrieving favorites, try again.', icon: 'font-awesome:fa-warning',actionReturnsItems:false});
+        LaunchBar.debugLog("Error retrieving favorites: "+ JSON.stringify(result.data, undefined, 2));
+      } else {
         //LaunchBar.setClipboardString(result.data);
         var currentFavourites = result.data;
         var copyCurrentFavourites = [];
@@ -239,7 +245,6 @@ function showFavourites(sonosid)
         var numresults = currentFavourites.length;
         LaunchBar.debugLog('Number of favourites:' + numresults);
 
-        var listItems = [];
         var debugstring = "Result: ";
         for (i=0; i<numresults; i++)
             {
@@ -248,8 +253,7 @@ function showFavourites(sonosid)
             }
         LaunchBar.debugLog(JSON.stringify(listItems, undefined, 2));
 //        LaunchBar.alert('Best match: ' + artist.name, 'The search term was "' + search + '"');
-    } else if (result.error != undefined) {
-        LaunchBar.debugLog(result.error);
+      };
     }
 
     return listItems;
